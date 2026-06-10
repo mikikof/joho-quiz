@@ -287,7 +287,6 @@ input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-
 <script src="data/questions.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const ENDPOINT=(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";
 const pad2=n=>String(n).padStart(2,"0");
 const fmtClock=ms=>{const s=Math.floor(ms/1000);return Math.floor(s/60)+":"+pad2(s%60);};
 const esc=s=>(s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -302,6 +301,9 @@ const P=new URLSearchParams(location.search);
 const ASSIGN=P.get("a")==="1";
 const PARAM_TITLE=P.get("t")||"情報Ⅰ Competition";
 const PARAM_SHEET=P.get("sh")||PARAM_TITLE;   // 集計タブ名（課題ごとに分離）
+const PARAM_GROUP=P.get("g")||"";             // クラス（TR/TB 等。集計先を分ける）
+const EPS=(window.APP_CONFIG&&APP_CONFIG.endpoints)||{};
+const ENDPOINT=(PARAM_GROUP&&EPS[PARAM_GROUP])||(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";
 const PARAM_SET=parseInt(P.get("s")||"0",10);
 const PARAM_N=parseInt(P.get("n")||"0",10);
 const PARAM_ORDER=P.get("o")||"seq";   // 既定は問題集の順（文字コードが1番目）

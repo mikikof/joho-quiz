@@ -12,6 +12,15 @@
  *       手順は SETUP.md を参照。
  **********************************************************************/
 
+// ★ スプレッドシートに「拡張機能 → Apps Script」から作った場合は空のままでOK。
+//   script.google.com で単独作成（スタンドアロン）の場合は、集計シートの URL
+//   https://docs.google.com/spreadsheets/d/【ここがID】/edit の ID を貼る。
+var SHEET_ID = '';
+
+function ss_() {
+  return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+}
+
 var HEADERS = [
   '受信日時','課題名','クイズID','氏名','学籍番号',
   'スコア','正解','問題数','正答率(%)','合計タイム(秒)',
@@ -52,13 +61,13 @@ function doGet(e) {
 }
 
 function listSheets_(p) {
-  var names = SpreadsheetApp.getActiveSpreadsheet().getSheets().map(function (s) { return s.getName(); });
+  var names = ss_().getSheets().map(function (s) { return s.getName(); });
   return jsonp_(p.callback, { ok: true, sheets: names });
 }
 
 function ranking_(p) {
   var name = sanitizeTab_(p.sheet);
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = ss_();
   var sheet = ss.getSheetByName(name);
   var rows = [];
   if (sheet && sheet.getLastRow() >= 2) {
@@ -90,7 +99,7 @@ function sanitizeTab_(name) {
   return s.length > 90 ? s.slice(0, 90) : s;
 }
 function getTab_(name) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = ss_();
   var sh = ss.getSheetByName(name);
   if (!sh) sh = ss.insertSheet(name);
   if (sh.getLastRow() === 0) {

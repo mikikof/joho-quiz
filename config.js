@@ -1,11 +1,16 @@
 /* ============================================================
-   情報スピードクイズ ― 接続設定
+   情報Ⅰ Competition ― 接続設定
    ------------------------------------------------------------
-   課題モードで結果を送る先（Google Apps Script のウェブアプリURL）を
-   ここに1度だけ設定する。設定手順は apps-script/SETUP.md を参照。
-   空のままだと「練習モード」で動き、結果送信は行わない。
+   クラス／グループごとに集計先（Google スプレッドシート＝Apps Script の
+   ウェブアプリURL）を分けられる。配布リンクで「どのクラスか（g=）」を
+   指定すると、その集計先へ結果が送られる。
+   設定手順は apps-script/SETUP.md を参照。
    ============================================================ */
 window.APP_CONFIG = {
-  // 例: "https://script.google.com/macros/s/AKfy.../exec"
+  endpoints: {
+    "TR": "https://script.google.com/macros/s/AKfycbwbeK4hHxq99gDY6SaUih4uSHbmwHxn76rVNWyAzBp7c4c35oV12vljHo3JDVtY8TTVyg/exec",
+    "TB": ""   // TB用のウェブアプリURLができたらここに貼る
+  },
+  // 単一運用時／グループ未指定時のフォールバック（任意）
   endpoint: ""
 };

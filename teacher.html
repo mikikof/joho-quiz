@@ -125,6 +125,11 @@ tr.reveal{animation:slidein .4s both}
       <h2>Distribution ／ 配布設定</h2>
       <div class="grid">
         <div class="full">
+          <label>クラス（集計先）</label>
+          <select id="distGroup"></select>
+          <div class="hint">送信先のスプレッドシートを選びます。TR と TB は別シートに集計されます。</div>
+        </div>
+        <div class="full">
           <label>公開URL（index.html の場所）</label>
           <input id="base" placeholder="https://ユーザー名.github.io/リポジトリ名/">
           <div class="hint">GitHub Pages で公開した index.html の URL。末尾の index.html は省略可。</div>
@@ -158,6 +163,7 @@ tr.reveal{animation:slidein .4s both}
     <div class="card">
       <h2>Leaderboard ／ ランキング表示</h2>
       <div class="rkctrl">
+        <div><label>クラス</label><select id="rkGroup"></select></div>
         <div class="f"><label>クイズ（集計タブ）を選ぶ</label><select id="rkSheet"><option value="">― 読み込み中 ―</option></select></div>
         <div><button class="btn soft" id="rkReload">一覧更新</button></div>
         <div><button class="btn" id="rkGo">集計する</button></div>
@@ -180,7 +186,9 @@ tr.reveal{animation:slidein .4s both}
 <script src="data/questions.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const ENDPOINT=(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";
+const EPS=(window.APP_CONFIG&&APP_CONFIG.endpoints)||{};
+const GROUPS=Object.keys(EPS);
+function epFor(g){return (g&&EPS[g])||(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";}
 const ROOT=document.documentElement;
 function setTheme(t){if(t==="dark")ROOT.setAttribute("data-theme","dark");else ROOT.removeAttribute("data-theme");try{localStorage.setItem("sq_theme",t);}catch(e){}}
 $("#themeBtn").onclick=()=>setTheme(ROOT.getAttribute("data-theme")==="dark"?"light":"dark");
@@ -192,14 +200,24 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   if(t.dataset.t==="rank"&&!sheetsLoaded) loadSheets();
 });
 
+/* ---- グループ（クラス）セレクト初期化 ---- */
+function fillGroups(sel){
+  sel.innerHTML = GROUPS.length
+    ? GROUPS.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("")
+    : '<option value="">（config.js 未設定）</option>';
+}
+fillGroups($("#distGroup")); fillGroups($("#rkGroup"));
+
 /* ---- 配布 ---- */
 (QUIZ_SETS||[]).forEach((w,i)=>{const o=document.createElement("option");o.value=i;o.textContent=w.label;$("#set").appendChild(o);});
 $("#make").onclick=()=>{
   let base=($("#base").value||"").trim();
   if(!base){alert("公開URLを入力してください");return;}
   base=base.replace(/index\.html.*$/,"").replace(/\/+$/,"");
+  const group=$("#distGroup").value;
   const p=new URLSearchParams();
   p.set("a","1");
+  if(group)p.set("g",group);
   p.set("t",($("#title").value||"情報スピードクイズ").trim());
   p.set("s",$("#set").value);
   p.set("n",$("#count").value);
@@ -208,8 +226,8 @@ $("#make").onclick=()=>{
   $("#link").value=full;
   $("#qr").src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data="+encodeURIComponent(full);
   const note=$("#epnote");
-  if(ENDPOINT){note.className="note";note.innerHTML="送信先（endpoint）設定済み ✓";}
-  else{note.className="note warn";note.innerHTML="config.js の endpoint が未設定です。このままだと結果が送信されず、ランキングも表示されません。apps-script/SETUP.md で設定してください。";}
+  if(epFor(group)){note.className="note";note.innerHTML="送信先（クラス "+esc(group||"既定")+"）設定済み ✓";}
+  else{note.className="note warn";note.innerHTML="クラス「"+esc(group)+"」の送信先が未設定です。config.js の endpoints に URL を設定してください（apps-script/SETUP.md）。";}
   $("#out").classList.add("show");$("#out").scrollIntoView({behavior:"smooth"});
 };
 $("#copy").onclick=()=>{const i=$("#link");i.select();navigator.clipboard&&navigator.clipboard.writeText(i.value);$("#copied").style.display="block";setTimeout(()=>$("#copied").style.display="none",2000);};
@@ -218,24 +236,25 @@ $("#copy").onclick=()=>{const i=$("#link");i.select();navigator.clipboard&&navig
 function esc(s){return (s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function fmtT(sec){return sec>=60?Math.floor(sec/60)+"分"+Math.round(sec%60)+"秒":sec+"秒";}
 let jsonpSeq=0, sheetsLoaded=false;
-function jsonp(extra){
+function jsonp(base, extra){
   return new Promise((resolve,reject)=>{
-    if(!ENDPOINT){reject("no-endpoint");return;}
+    if(!base){reject("no-endpoint");return;}
     const cb="sqcb"+(++jsonpSeq);
     const sc=document.createElement("script");
     const to=setTimeout(()=>{cleanup();reject("timeout");},12000);
     function cleanup(){clearTimeout(to);delete window[cb];sc.remove();}
     window[cb]=data=>{cleanup();resolve(data);};
-    sc.src=ENDPOINT+(ENDPOINT.includes("?")?"&":"?")+extra+"&callback="+cb;
+    sc.src=base+(base.includes("?")?"&":"?")+extra+"&callback="+cb;
     sc.onerror=()=>{cleanup();reject("network");};
     document.body.appendChild(sc);
   });
 }
+$("#rkGroup").onchange=()=>{sheetsLoaded=false;loadSheets();};
 async function loadSheets(){
   const sel=$("#rkSheet");
   sel.innerHTML='<option value="">― 読み込み中 ―</option>';
   try{
-    const d=await jsonp("sheets=1");
+    const d=await jsonp(epFor($("#rkGroup").value),"sheets=1");
     sheetsLoaded=true;
     const names=(d.sheets||[]);
     if(!names.length){ sel.innerHTML='<option value="">（まだクイズの集計タブがありません）</option>'; return; }
@@ -246,13 +265,13 @@ async function loadSheets(){
 }
 $("#rkReload").onclick=()=>loadSheets();
 $("#rkGo").onclick=async()=>{
-  const sheet=$("#rkSheet").value;
+  const sheet=$("#rkSheet").value, grp=$("#rkGroup").value;
   if(!sheet){ $("#rkEmpty").style.display="block"; $("#rkResult").style.display="none";
-    $("#rkEmptyMsg").textContent=ENDPOINT?"集計するクイズ（タブ）を選んでください。":"config.js の endpoint が未設定です。apps-script/SETUP.md を参照。"; return; }
+    $("#rkEmptyMsg").textContent=epFor(grp)?"集計するクイズ（タブ）を選んでください。":"このクラスの送信先が未設定です。config.js の endpoints を参照。"; return; }
   const btn=$("#rkGo"); btn.innerHTML='<span class="spin"></span>';
   $("#rkResult").style.display="none"; $("#rkEmpty").style.display="none";
   try{
-    const data=await jsonp("ranking=1&sheet="+sheet);
+    const data=await jsonp(epFor(grp),"ranking=1&sheet="+sheet);
     btn.textContent="集計する";
     if(!data||!data.rows||!data.rows.length){
       $("#rkEmpty").style.display="block";
