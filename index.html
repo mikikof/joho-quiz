@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>情報Ⅰ Competition</title>
+<script>try{var t=localStorage.getItem("sq_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ===== LIGHT（デフォルト） ===== */
+  --bg:#e7e9ef; --panel-tint:#eef0f5;
+  --glow1:rgba(124,92,255,.13); --glow2:rgba(20,184,212,.12);
+  --surface:#ffffff; --tile-bg:rgba(17,21,31,.025);
+  --line:rgba(17,21,31,.085); --line-2:rgba(17,21,31,.14);
+  --ink:#0e1118; --sub:#5d6678; --faint:#9aa3b2;
+  --acc:#0c98c4; --acc-on:#ffffff; --acc-soft:rgba(12,152,196,.10); --acc-border:rgba(12,152,196,.55);
+  --btn-bg:#13151d; --btn-on:#ffffff; --btn-shadow:0 12px 26px -8px rgba(19,21,29,.5);
+  --mint:#0fae77; --mint-soft:rgba(15,174,119,.12); --mint-ink:#ffffff;
+  --rose:#e93c59; --rose-soft:rgba(233,60,89,.10); --rose-ink:#ffffff;
+  --gold:#d99800; --silver:#8e9ab2; --bronze:#bf7a43;
+  --card-shadow:0 34px 70px -34px rgba(28,38,72,.34), 0 1px 3px rgba(28,38,72,.05);
+  --input-bg:rgba(17,21,31,.02);
+  --qimg-bg:#ffffff; --qimg-shadow:0 14px 36px -14px rgba(24,34,64,.3);
+  --font-content:"Times New Roman","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",serif;
+  --mono:"Space Grotesk","Montserrat",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#090a0f; --panel-tint:#101218;
+  --glow1:rgba(124,92,255,.2); --glow2:rgba(34,211,238,.15);
+  --surface:#14161e; --tile-bg:rgba(255,255,255,.03);
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.15);
+  --ink:#eceff5; --sub:#8b93a6; --faint:#5b6376;
+  --acc:#22d3ee; --acc-on:#04121a; --acc-soft:rgba(34,211,238,.12); --acc-border:rgba(34,211,238,.5);
+  --btn-bg:#eef1f7; --btn-on:#0a0b11; --btn-shadow:0 12px 26px -10px rgba(0,0,0,.7);
+  --mint:#34e3b0; --mint-soft:rgba(52,227,176,.12); --mint-ink:#04121a;
+  --rose:#fb6f92; --rose-soft:rgba(251,111,146,.12); --rose-ink:#1a0410;
+  --gold:#f6c453; --silver:#aab6cc; --bronze:#cf915b;
+  --card-shadow:0 44px 90px -42px rgba(0,0,0,.78);
+  --input-bg:rgba(255,255,255,.03);
+  --qimg-bg:#ffffff; --qimg-shadow:0 18px 40px -16px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);line-height:1.7;min-height:100%;overflow-x:hidden;
+  background:var(--bg);
+  background-image:radial-gradient(1100px 640px at 84% -14%, var(--glow1), transparent 60%),
+    radial-gradient(900px 560px at -12% 114%, var(--glow2), transparent 55%);
+  background-attachment:fixed;transition:background-color .3s,color .3s}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+.screen{display:none;animation:fade .4s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{position:relative;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--card-shadow)}
+
+/* theme toggle */
+.themebtn{position:fixed;top:16px;right:16px;z-index:60;width:42px;height:42px;border-radius:13px;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--sub);cursor:pointer;display:grid;place-items:center;box-shadow:var(--card-shadow)}
+.themebtn:hover{color:var(--acc);border-color:var(--acc-border)}
+.themebtn svg{width:19px;height:19px}.themebtn .sun{display:none}.themebtn .moon{display:block}
+:root[data-theme="dark"] .themebtn .sun{display:block}:root[data-theme="dark"] .themebtn .moon{display:none}
+
+/* buttons (solid, no gradient) */
+.btn{font:inherit;font-weight:700;border:0;border-radius:13px;padding:14px 26px;cursor:pointer;color:var(--btn-on);
+  background:var(--btn-bg);font-size:.98rem;transition:transform .08s,filter .2s,box-shadow .2s;box-shadow:var(--btn-shadow)}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:translateY(1px)}
+.btn.xl{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;padding:17px 54px;font-size:1rem;border-radius:14px}
+.btn.accent{background:var(--acc);color:var(--acc-on);box-shadow:0 12px 28px -10px var(--acc)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2);box-shadow:none}
+.btn.ghost:hover{filter:none;border-color:var(--acc-border);color:var(--acc)}
+.btn:disabled{opacity:.4;cursor:default;filter:none}
+
+/* ===== START ===== */
+.hero{text-align:center;padding:64px 22px 6px}
+.eyebrow{font-family:var(--mono);font-weight:600;font-size:.74rem;letter-spacing:.34em;text-transform:uppercase;color:var(--acc)}
+.hero h1{font-size:2.7rem;font-weight:900;margin:18px 0 16px;letter-spacing:.01em;line-height:1.18}
+.hero h1 .en{font-family:var(--mono);font-weight:700}
+.hero .lede{color:var(--sub);font-size:1rem;max-width:34em;margin:0 auto;line-height:1.8}
+.specs{display:flex;justify-content:center;max-width:540px;margin:36px auto 6px}
+.spec{flex:1;text-align:center;padding:2px 16px}
+.spec + .spec{border-left:1px solid var(--line)}
+.spec .sv{display:block;font-family:var(--mono);font-weight:700;font-size:1.5rem;color:var(--ink)}
+.spec .sl{font-size:.72rem;color:var(--sub);margin-top:5px}
+.setrow{max-width:430px;margin:44px auto 0;display:flex;flex-direction:column;gap:20px}
+.setgrp{display:flex;flex-direction:column;gap:9px}
+.setlab{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--sub)}
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--tile-bg);border:1px solid var(--line);border-radius:12px;padding:4px;gap:3px}
+.seg button{font:inherit;font-size:.9rem;font-weight:600;border:0;background:transparent;color:var(--sub);padding:9px 16px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:.15s}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 2px 6px -1px rgba(0,0,0,.18)}
+.startcta{display:flex;justify-content:center;margin:40px 0 8px}
+.gate{max-width:430px;margin:30px auto 0;padding:28px}
+.gate .tag{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+  color:#7c5cff;border:1px solid rgba(124,92,255,.4);background:rgba(124,92,255,.1);padding:5px 11px;border-radius:7px;margin-bottom:14px}
+.gate .gtitle{font-weight:800;font-size:1.12rem;margin-bottom:4px}
+.gate .gmeta{color:var(--sub);font-size:.86rem;margin-bottom:6px}
+.field{margin-top:15px}
+label{display:block;font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:8px}
+input{width:100%;font:inherit;font-size:1rem;padding:14px 15px;border:1px solid var(--line-2);border-radius:12px;background:var(--input-bg);color:var(--ink)}
+input::placeholder{color:var(--faint)}
+input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+
+/* ===== EXAM CONSOLE ===== */
+.brandline{font-family:var(--mono);font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);padding:24px 2px 0;font-weight:600}
+.examwrap{display:grid;grid-template-columns:272px 1fr;gap:22px;align-items:start;margin-top:14px}
+.rail{position:sticky;top:18px}
+.railcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--card-shadow);padding:18px}
+.railhd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.railhd .tlab{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--sub)}
+.tval{font-family:var(--mono);font-weight:700;font-size:1.5rem;color:var(--ink)}
+.tval.over{color:var(--rose)}
+.progtxt{font-size:.74rem;color:var(--sub);margin:8px 0 7px}
+.progtxt b{color:var(--ink);font-family:var(--mono)}
+.progbar{height:5px;border-radius:999px;background:var(--tile-bg);overflow:hidden}
+.progbar>i{display:block;height:100%;width:0;border-radius:999px;background:var(--acc);transition:width .3s}
+.seclabel{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin:18px 0 9px}
+.pips{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:7px}
+.pip{aspect-ratio:1;border-radius:10px;border:1px solid var(--line-2);background:var(--tile-bg);color:var(--sub);
+  font-family:var(--mono);font-weight:600;font-size:.84rem;display:grid;place-items:center;cursor:pointer;transition:.12s;position:relative}
+.pip:hover{border-color:var(--acc-border)}
+.pip.answered{background:var(--acc-soft);border-color:var(--acc-border);color:var(--acc)}
+.pip.current{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc-soft);color:var(--ink)}
+.pip.answered.current{color:var(--acc)}
+.gradewrap{margin-top:18px}
+.gradewrap .btn{width:100%;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:.9rem}
+.ghint{text-align:center;font-size:.72rem;color:var(--faint);margin-top:9px}
+
+.main .qcard{padding:30px 30px 28px}
+.qhead{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.qtype{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);border:1px solid var(--line-2);padding:5px 11px;border-radius:7px}
+.qidx{margin-left:auto;font-family:var(--mono);font-size:.8rem;font-weight:600;color:var(--faint)}
+.qidx b{color:var(--ink)}
+.qtext{font-family:var(--font-content);font-size:1.34rem;font-weight:500;line-height:1.62;margin-bottom:20px;color:var(--ink)}
+.qimg-wrap{margin:0 0 22px}
+.qimg{display:block;max-width:100%;margin:0 auto;border-radius:14px;background:var(--qimg-bg);padding:14px;border:1px solid var(--line);box-shadow:var(--qimg-shadow)}
+.choices{display:grid;gap:11px}
+.choices.pick{grid-template-columns:repeat(4,1fr);gap:11px}
+.choice{display:flex;gap:13px;align-items:center;text-align:left;background:var(--tile-bg);border:1px solid var(--line-2);border-radius:14px;
+  padding:16px 18px;color:var(--ink);font-family:var(--font-content);font-size:1.05rem;font-weight:500;cursor:pointer;transition:.14s}
+.choice.pk{justify-content:center;font-family:var(--mono);font-size:1.7rem;font-weight:700;padding:22px 8px}
+.choice:hover{border-color:var(--acc-border);background:var(--acc-soft)}
+.choice .k{width:30px;height:30px;flex:none;border-radius:8px;background:var(--tile-bg);border:1px solid var(--line-2);color:var(--sub);
+  font-family:var(--mono);font-weight:700;display:grid;place-items:center;transition:.14s}
+.choice.sel{border-color:var(--acc);background:var(--acc-soft);box-shadow:0 0 0 1px var(--acc-border)}
+.choice.sel .k{background:var(--acc);border-color:var(--acc);color:var(--acc-on)}
+.shortwrap{margin-top:4px}
+.shortwrap input{font-family:var(--mono);font-size:1.2rem;text-align:center;font-weight:700;letter-spacing:.04em}
+/* fill (複数空欄) */
+.passage{font-family:var(--font-content);font-size:1.05rem;line-height:1.95;color:var(--ink);background:var(--tile-bg);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:22px}
+.blk{display:inline-block;min-width:2.1em;text-align:center;font-family:var(--mono);font-weight:700;color:var(--acc);border:1px solid var(--acc-border);background:var(--acc-soft);border-radius:6px;padding:0 .35em;margin:0 .12em;font-size:.92em}
+.blanks{display:grid;gap:14px}
+.brow{display:flex;gap:12px;align-items:flex-start}
+.bkey{flex:none;min-width:34px;height:34px;padding:0 9px;border-radius:9px;background:var(--ink);color:var(--surface);font-family:var(--mono);font-weight:700;display:grid;place-items:center;font-size:.86rem;margin-top:2px}
+.bbody{flex:1;min-width:0}
+.bq{font-family:var(--font-content);font-size:1rem;color:var(--ink);margin-bottom:8px;line-height:1.55}
+.bnum{width:120px;font-family:var(--mono);font-size:1.15rem;text-align:center;font-weight:700;padding:10px}
+.btext{width:100%;max-width:340px;font-family:var(--mono);font-size:1.1rem;font-weight:700;padding:10px 12px;letter-spacing:.03em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;flex:1}
+.chip{font-family:var(--font-content);font-size:.97rem;border:1px solid var(--line-2);background:var(--tile-bg);color:var(--ink);border-radius:10px;padding:9px 13px;cursor:pointer;display:flex;gap:8px;align-items:center;transition:.14s}
+.chip .cn{font-family:var(--mono);font-weight:700;color:var(--sub)}
+.chip:hover{border-color:var(--acc-border)}
+.chip.sel{border-color:var(--acc);background:var(--acc-soft);box-shadow:0 0 0 1px var(--acc-border)}
+.chip.sel .cn{color:var(--acc)}
+.navbtns{display:flex;gap:11px;margin-top:16px}
+.navbtns .btn{flex:1;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;font-size:.84rem}
+
+/* ===== RESULT ===== */
+.result{padding:42px 30px}
+.result .lead{font-family:var(--mono);font-weight:700;font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--sub);text-align:center}
+.bigscore{text-align:center;font-family:var(--mono);font-weight:700;font-size:5rem;line-height:1;margin:8px 0 0;color:var(--ink)}
+.bigscore .u{font-size:1.3rem;color:var(--sub);margin-left:8px;letter-spacing:0}
+.breakdown{text-align:center;font-family:var(--mono);font-size:.78rem;color:var(--sub);letter-spacing:.04em;margin-top:6px}
+.breakdown b{color:var(--acc)}
+.rankline{text-align:center;font-family:var(--mono);font-weight:700;font-size:1.05rem;letter-spacing:.1em;margin-top:12px;color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:28px 0 8px}
+.stat{background:var(--tile-bg);border:1px solid var(--line);border-radius:15px;padding:18px 8px;text-align:center}
+.stat .v{font-family:var(--mono);font-weight:700;font-size:1.55rem;color:var(--ink)}
+.stat .l{font-family:var(--mono);font-size:.62rem;color:var(--sub);font-weight:600;letter-spacing:.16em;margin-top:6px;text-transform:uppercase}
+.review{margin-top:22px}
+.review h3{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;color:var(--sub)}
+.ritem{display:flex;gap:13px;align-items:flex-start;padding:16px 2px;border-top:1px solid var(--line)}
+.rmark{width:24px;height:24px;flex:none;border-radius:7px;font-weight:800;display:grid;place-items:center;font-size:.82rem;margin-top:2px}
+.rmark.ok{background:var(--mint-soft);color:var(--mint)} .rmark.ng{background:var(--rose-soft);color:var(--rose)}
+.rq{font-family:var(--font-content);font-weight:500;font-size:.96rem;line-height:1.55}
+.rans{font-size:.82rem;color:var(--sub);margin-top:5px}
+.rans b{color:var(--ink)}
+.rexp{font-family:var(--font-content);font-size:.88rem;color:var(--sub);line-height:1.7;margin-top:6px}
+.sendnote{margin-top:22px;font-size:.86rem;font-weight:600;border-radius:12px;padding:14px 16px;border:1px solid var(--line)}
+.sendnote.ok{background:var(--mint-soft);color:var(--mint);border-color:var(--mint)}
+.sendnote.ng{background:var(--rose-soft);color:var(--rose);border-color:var(--rose)}
+.sendnote.wait{background:var(--tile-bg);color:var(--gold);border-color:var(--line-2)}
+.foot{text-align:center;color:var(--faint);font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;padding:30px 0 40px}
+.confetti{position:fixed;top:-10px;width:9px;height:14px;z-index:50;pointer-events:none;border-radius:2px}
+@media(max-width:780px){
+  .examwrap{grid-template-columns:1fr}
+  .rail{position:static}
+  .pips{grid-template-columns:repeat(auto-fill,minmax(38px,1fr))}
+  .hero h1{font-size:1.95rem} .qtext{font-size:1.2rem} .bigscore{font-size:3.9rem} .stat .v{font-size:1.3rem}
+  .main .qcard{padding:24px 22px}
+}
+</style>
+</head>
+<body>
+
+<button class="themebtn" id="themeBtn" aria-label="テーマ切り替え" title="テーマ切り替え">
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+</button>
+
+<!-- ============ START ============ -->
+<section class="screen on" id="s-start"><div class="wrap">
+  <div class="hero">
+    <span class="eyebrow">SPEED × ACCURACY</span>
+    <h1>情報Ⅰ <span class="en">Competition</span></h1>
+    <p class="lede" id="startSub">解答速度と正答率を、ひとつのスコアで評価</p>
+    <div class="specs">
+      <div class="spec"><span class="sv num">100</span><span class="sl">正解 / 1問</span></div>
+      <div class="spec"><span class="sv num">+100</span><span class="sl">速答ボーナス上限</span></div>
+      <div class="spec"><span class="sv">RANK</span><span class="sl">総合順位を判定</span></div>
+    </div>
+  </div>
+  <div id="startBox"></div>
+  <div class="foot">Information · Speed Quiz</div>
+</div></section>
+
+<!-- ============ QUIZ (exam console) ============ -->
+<section class="screen" id="s-quiz"><div class="wrap">
+  <div class="brandline">情報Ⅰ Competition</div>
+  <div class="examwrap">
+    <aside class="rail"><div class="railcard">
+      <div class="railhd"><span class="tlab">TIME</span><span class="tval" id="elapsed">0:00</span></div>
+      <div class="progtxt">回答済 <b id="answeredN">0</b> / <span id="totalN">0</span></div>
+      <div class="progbar"><i id="progFill"></i></div>
+      <div class="seclabel" id="secLabel">SECTION</div>
+      <div class="pips" id="pips"></div>
+      <div class="gradewrap">
+        <button class="btn accent" id="gradeBtn">採点する</button>
+        <div class="ghint" id="gradeHint">全問に回答してから採点できます</div>
+      </div>
+    </div></aside>
+    <main class="main">
+      <div class="card qcard">
+        <div class="qhead">
+          <span class="qtype" id="qType">四択</span>
+          <span class="qidx">問 <b id="qNow">01</b> / <span id="qTotal">02</span></span>
+        </div>
+        <div class="qtext" id="qText">問題文</div>
+        <div class="qimg-wrap" id="qImg"></div>
+        <div class="choices" id="choices"></div>
+        <div class="shortwrap" id="shortWrap" style="display:none">
+          <input id="shortInput" type="text" autocomplete="off" autocapitalize="off" placeholder="解答を入力">
+        </div>
+        <div class="fillwrap" id="fillWrap" style="display:none"></div>
+      </div>
+      <div class="navbtns">
+        <button class="btn ghost" id="prevBtn">← 前へ</button>
+        <button class="btn ghost" id="nextBtn">次へ →</button>
+      </div>
+    </main>
+  </div>
+  <div class="foot">採点を押すまで結果は表示されません</div>
+</div></section>
+
+<!-- ============ RESULT ============ -->
+<section class="screen" id="s-result"><div class="wrap" style="max-width:740px">
+  <div class="card result">
+    <div class="lead">RESULT</div>
+    <div class="bigscore"><span id="rScore">0</span><span class="u">点</span></div>
+    <div class="breakdown" id="rBreak"></div>
+    <div class="rankline" id="rRank">　</div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="rAcc">0%</div><div class="l">Accuracy</div></div>
+      <div class="stat"><div class="v" id="rOk">0/0</div><div class="l">Correct</div></div>
+      <div class="stat"><div class="v" id="rTime">0:00</div><div class="l">Time</div></div>
+    </div>
+    <div id="sendNote"></div>
+    <div class="review">
+      <h3>Review</h3>
+      <div id="reviewList"></div>
+    </div>
+    <div id="resultBtns" style="margin-top:26px"></div>
+  </div>
+  <div class="foot">Information · Speed Quiz</div>
+</div></section>
+
+<script src="config.js"></script>
+<script src="data/questions.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const ENDPOINT=(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";
+const pad2=n=>String(n).padStart(2,"0");
+const fmtClock=ms=>{const s=Math.floor(ms/1000);return Math.floor(s/60)+":"+pad2(s%60);};
+const esc=s=>(s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---- theme ---- */
+const ROOT=document.documentElement;
+function setTheme(t){if(t==="dark")ROOT.setAttribute("data-theme","dark");else ROOT.removeAttribute("data-theme");try{localStorage.setItem("sq_theme",t);}catch(e){}}
+$("#themeBtn").onclick=()=>setTheme(ROOT.getAttribute("data-theme")==="dark"?"light":"dark");
+
+/* ---- params ---- */
+const P=new URLSearchParams(location.search);
+const ASSIGN=P.get("a")==="1";
+const PARAM_TITLE=P.get("t")||"情報Ⅰ Competition";
+const PARAM_SHEET=P.get("sh")||PARAM_TITLE;   // 集計タブ名（課題ごとに分離）
+const PARAM_SET=parseInt(P.get("s")||"0",10);
+const PARAM_N=parseInt(P.get("n")||"0",10);
+const PARAM_ORDER=P.get("o")||"seq";   // 既定は問題集の順（文字コードが1番目）
+
+/* ---- state ---- */
+let SET=null,Qs=[],idx=0,total=0,answers=[],score=0;
+let START_TS=0,tick=null,parMs=0,FINAL_MS=0;
+let away={count:0,sec:0,since:0};
+let runMeta={name:"",studentId:"",order:PARAM_ORDER,count:PARAM_N,setIdx:PARAM_SET};
+
+/* ---- helpers ---- */
+function norm(s){return (s||"").trim().toLowerCase().replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/\s+/g,"");}
+function shortOK(input,accept){const n=norm(input);return (accept||[]).some(a=>norm(a)===n);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function isAnswered(i){
+  const a=answers[i],q=Qs[i];
+  if(q.type==="short")return a!=null&&String(a).trim()!=="";
+  if(q.type==="fill"){const o=a||{};return q.blanks.every(b=>{const v=o[b.key];return b.kind==="choice"?(v!=null&&v!==undefined):(v!=null&&String(v).trim()!=="");});}
+  return a!=null;
+}
+
+/* ---- segmented control ---- */
+function seg(el,opts,def,cb){
+  el.innerHTML="";
+  opts.forEach(o=>{
+    const b=document.createElement("button");b.textContent=o.t;
+    if(o.v===def)b.classList.add("on");
+    b.onclick=()=>{[...el.children].forEach(x=>x.classList.remove("on"));b.classList.add("on");cb(o.v);};
+    el.appendChild(b);
+  });
+}
+
+/* ---- START ---- */
+function buildStart(){
+  const box=$("#startBox");
+  if(ASSIGN){
+    SET=QUIZ_SETS[PARAM_SET]||QUIZ_SETS[0];
+    $("#startSub").textContent="氏名と学籍番号を入力し、解答を開始してください。結果は担当者へ送信されます。";
+    box.innerHTML=`<div class="card gate">
+      <span class="tag">Assignment</span>
+      <div class="gtitle">${esc(PARAM_TITLE)}</div>
+      <div class="gmeta">範囲：${esc(SET.label)} ／ ${PARAM_N>0?PARAM_N+"問":SET.questions.length+"問"}</div>
+      <div class="field"><label>Name ／ 氏名</label><input id="inName" placeholder="例：山田 太郎"></div>
+      <div class="field"><label>ID ／ 学籍番号</label><input id="inSid" placeholder="例：2026123"></div>
+      <div class="startcta" style="margin:24px 0 0"><button class="btn xl" id="goBtn">Start</button></div>
+      ${ENDPOINT?"":'<div class="sendnote wait" style="margin-top:16px">送信先が未設定です。現在は練習として動作し、結果は送信されません。</div>'}</div>`;
+    $("#goBtn").onclick=()=>{
+      const nm=$("#inName").value.trim();
+      if(!nm){alert("氏名を入力してください");return;}
+      runMeta.name=nm;runMeta.studentId=$("#inSid").value.trim();startQuiz();
+    };
+  }else{
+    box.innerHTML=`<div class="setrow">
+      <div class="setgrp"><div class="setlab">Range ／ 範囲</div><div class="seg" id="segSet"></div></div>
+      <div class="setgrp"><div class="setlab">Count ／ 問題数</div><div class="seg" id="segN"></div></div>
+      <div class="setgrp"><div class="setlab">Order ／ 出題順</div><div class="seg" id="segO"></div></div>
+    </div><div class="startcta"><button class="btn xl" id="goBtn">Start</button></div>`;
+    seg($("#segSet"),QUIZ_SETS.map((s,i)=>({v:i,t:s.label})),0,v=>runMeta.setIdx=v);
+    seg($("#segN"),[{v:0,t:"全問"},{v:5,t:"5問"},{v:10,t:"10問"}],0,v=>runMeta.count=v);
+    seg($("#segO"),[{v:"seq",t:"順番"},{v:"random",t:"ランダム"}],"seq",v=>runMeta.order=v);
+    $("#goBtn").onclick=()=>{SET=QUIZ_SETS[runMeta.setIdx];startQuiz();};
+  }
+}
+
+/* ---- quiz ---- */
+function startQuiz(){
+  let q=SET.questions.slice();
+  if(runMeta.order==="random")q=shuffle(q);
+  if(runMeta.count>0)q=q.slice(0,runMeta.count);
+  Qs=q;total=q.length;idx=0;answers=new Array(total).fill(null);
+  parMs=Qs.reduce((s,x)=>s+(x.timeLimit||SET.timeLimit||20)*1000,0);
+  $("#qTotal").textContent=pad2(total);$("#totalN").textContent=total;
+  $("#secLabel").textContent=SET.label;
+  buildPips();
+  START_TS=Date.now();
+  clearInterval(tick);tick=setInterval(updateClock,500);updateClock();
+  show("s-quiz");go(0);updateProgress();
+}
+function buildPips(){
+  const w=$("#pips");w.innerHTML="";
+  for(let i=0;i<total;i++){
+    const b=document.createElement("button");b.className="pip";b.textContent=i+1;
+    b.onclick=()=>go(i);w.appendChild(b);
+  }
+}
+function refreshPips(){
+  [...$("#pips").children].forEach((p,i)=>{
+    p.classList.toggle("answered",isAnswered(i));
+    p.classList.toggle("current",i===idx);
+  });
+}
+function updateProgress(){
+  const n=answers.filter((_,i)=>isAnswered(i)).length;
+  $("#answeredN").textContent=n;
+  $("#progFill").style.width=(n/total*100)+"%";
+  const all=n===total;
+  $("#gradeHint").textContent=all?"すべて回答済み。採点できます":`未回答 ${total-n} 問（このまま採点も可）`;
+}
+function updateClock(){
+  const ms=Date.now()-START_TS;
+  const el=$("#elapsed");el.textContent=fmtClock(ms);
+  el.classList.toggle("over",ms>parMs);
+}
+function go(i){
+  idx=i;const q=Qs[i];
+  $("#qNow").textContent=pad2(i+1);
+  $("#qType").textContent=q.type==="short"?"記述":q.type==="fill"?"穴埋め":(q.pick?"図の選択":"四択");
+  $("#qText").textContent=q.type==="fill"?(q.lead||q.q):q.q;
+  $("#qImg").innerHTML=q.image?`<img class="qimg" src="${q.image}" alt="図">`:"";
+  const cWrap=$("#choices"),sWrap=$("#shortWrap"),fWrap=$("#fillWrap");
+  cWrap.style.display="none";cWrap.className="choices";cWrap.innerHTML="";
+  sWrap.style.display="none";fWrap.style.display="none";fWrap.innerHTML="";
+  if(q.type==="short"){
+    sWrap.style.display="block";
+    const inp=$("#shortInput");inp.value=answers[i]||"";
+    inp.oninput=()=>{answers[i]=inp.value;refreshPips();updateProgress();};
+    inp.onkeydown=e=>{if(e.key==="Enter"&&i<total-1)go(i+1);};
+    setTimeout(()=>inp.focus(),50);
+  }else if(q.type==="fill"){
+    fWrap.style.display="block";renderFill(i,q,fWrap);
+  }else{
+    cWrap.style.display="grid";cWrap.className="choices"+(q.pick?" pick":"");
+    q.choices.forEach((c,j)=>{
+      const b=document.createElement("button");
+      if(q.pick){b.className="choice pk";b.textContent=c;}
+      else{b.className="choice";b.innerHTML=`<span class="k">${"ABCD"[j]}</span><span>${esc(c)}</span>`;}
+      if(answers[i]===j)b.classList.add("sel");
+      b.onclick=()=>selectMC(i,j);
+      cWrap.appendChild(b);
+    });
+  }
+  $("#prevBtn").disabled=i===0;
+  $("#nextBtn").disabled=i===total-1;
+  refreshPips();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function selectMC(i,j){
+  answers[i]=j;
+  [...$("#choices").children].forEach((b,k)=>b.classList.toggle("sel",k===j));
+  refreshPips();updateProgress();
+  if(i<total-1)setTimeout(()=>go(i+1),230);
+}
+$("#prevBtn").onclick=()=>{if(idx>0)go(idx-1);};
+$("#nextBtn").onclick=()=>{if(idx<total-1)go(idx+1);};
+
+/* ---- fill (複数空欄) ---- */
+const CIRCLED=["⓪","①","②","③","④","⑤","⑥","⑦","⑧","⑨"];
+function buildPassage(text){return (text||"").split(/【([^】]+)】/).map((seg,i)=>i%2?`<span class="blk">${esc(seg)}</span>`:esc(seg)).join("");}
+function renderFill(i,q,fWrap){
+  if(answers[i]==null||typeof answers[i]!=="object")answers[i]={};
+  const ans=answers[i];
+  const rows=q.blanks.map(b=>{
+    const pr=b.prompt?`<div class="bq">${esc(b.prompt)}</div>`:"";
+    if(b.kind!=="choice"){
+      const im=b.kind==="num"?"numeric":"text", cl=b.kind==="num"?"bnum":"btext";
+      return `<div class="brow"><span class="bkey">${esc(b.key)}</span><div class="bbody">${pr}<input class="${cl}" data-k="${esc(b.key)}" inputmode="${im}" autocomplete="off" autocapitalize="off" value="${ans[b.key]!=null?esc(ans[b.key]):""}" placeholder="解答を入力"></div></div>`;
+    }
+    const opts=q.groups[b.group].map((o,oi)=>`<button class="chip${ans[b.key]===oi?" sel":""}" data-k="${esc(b.key)}" data-i="${oi}"><span class="cn">${CIRCLED[oi]}</span><span>${esc(o)}</span></button>`).join("");
+    return `<div class="brow"><span class="bkey">${esc(b.key)}</span><div class="bbody">${pr}<div class="chips">${opts}</div></div></div>`;
+  }).join("");
+  fWrap.innerHTML=`${q.passage?`<div class="passage">${buildPassage(q.passage)}</div>`:""}<div class="blanks">${rows}</div>`;
+  fWrap.querySelectorAll("input[data-k]").forEach(inp=>inp.oninput=()=>{ans[inp.dataset.k]=inp.value;refreshPips();updateProgress();});
+  fWrap.querySelectorAll(".chip").forEach(ch=>ch.onclick=()=>{
+    const k=ch.dataset.k,oi=+ch.dataset.i;ans[k]=oi;
+    fWrap.querySelectorAll('.chip[data-k="'+k+'"]').forEach(x=>x.classList.toggle("sel",x===ch));
+    refreshPips();updateProgress();
+  });
+}
+function gradeBlank(b,v){return b.kind==="choice"?v===b.answer:(v!=null&&shortOK(v,b.accept));}
+function isCorrect(i){
+  const q=Qs[i],a=answers[i];
+  if(q.type==="short")return a!=null&&shortOK(a,q.accept);
+  if(q.type==="fill"){const o=a||{};return q.blanks.every(b=>gradeBlank(b,o[b.key]));}
+  return a===q.answer;
+}
+
+/* ---- grade ---- */
+$("#gradeBtn").onclick=()=>{
+  const un=total-answers.filter((_,i)=>isAnswered(i)).length;
+  if(un>0&&!confirm(`未回答が ${un} 問あります。このまま採点しますか？`))return;
+  clearInterval(tick);
+  FINAL_MS=Date.now()-START_TS;
+  finish();
+};
+
+/* ---- result ---- */
+function finish(){
+  let correct=0;const review=[];
+  Qs.forEach((q,i)=>{
+    const ok=isCorrect(i);if(ok)correct++;
+    if(q.type==="fill"){
+      const o=answers[i]||{};
+      const blanks=q.blanks.map(b=>{const v=o[b.key],isC=b.kind==="choice";
+        const gv=isC?(v==null?"（無）":q.groups[b.group][v]):((v==null||v==="")?"（無）":v);
+        const cv=isC?q.groups[b.group][b.answer]:b.accept[0];
+        return {key:b.key,ok:gradeBlank(b,v),gv,cv};});
+      review.push({type:"fill",q:q.q||q.lead,ok,blanks,explain:q.explain||""});
+    }else{
+      const a=answers[i];
+      const given=q.type==="short"?((a==null||a==="")?"（無回答）":a):(a==null?"（無回答）":q.choices[a]);
+      review.push({type:q.type,q:q.q,ok,given,correct:(q.type==="short"?q.accept[0]:q.choices[q.answer]),explain:q.explain||""});
+    }
+  });
+  const acc=Math.round(correct/total*100);
+  const base=correct*100;
+  const speedFactor=Math.max(0,Math.min(1,(parMs-FINAL_MS)/parMs));
+  const bonus=Math.round(base*speedFactor);
+  score=base+bonus;
+  show("s-result");
+  $("#rScore").textContent="0";
+  $("#rBreak").innerHTML=`正答 <b>${base}</b> ＋ スピード <b>+${bonus}</b>`;
+  $("#rAcc").textContent=acc+"%";
+  $("#rOk").textContent=correct+"/"+total;
+  $("#rTime").textContent=fmtClock(FINAL_MS);
+  $("#rRank").textContent=rankMsg(acc);
+  animateNum($("#rScore"),0,score,1100);
+  $("#reviewList").innerHTML=review.map((r,i)=>`
+    <div class="ritem">
+      <div class="rmark ${r.ok?"ok":"ng"}">${r.ok?"✓":"✗"}</div>
+      <div style="flex:1">
+        <div class="rq">${i+1}. ${esc(r.q)}</div>
+        ${r.type==="fill"
+          ? `<div class="rans">${r.blanks.map(b=>`<span style="display:inline-block;margin:2px 14px 2px 0">${esc(b.key)}：<b>${esc(b.cv)}</b>${b.ok?" ✓":` <span style="color:var(--rose)">／ あなた ${esc(b.gv)} ✗</span>`}</span>`).join("")}</div>`
+          : `<div class="rans">${r.ok?`正解：<b>${esc(r.correct)}</b>`:`正解：<b>${esc(r.correct)}</b>　/　あなた：${esc(r.given)}`}</div>`}
+        ${r.explain?`<div class="rexp">${esc(r.explain)}</div>`:""}
+      </div>
+    </div>`).join("");
+  if(acc>=70&&score>0)burst();
+  const btns=$("#resultBtns"),note=$("#sendNote");
+  if(ASSIGN){
+    if(ENDPOINT){note.innerHTML='<div class="sendnote wait">結果を送信しています…</div>';submit(correct,acc,note);}
+    else note.innerHTML='<div class="sendnote ng">送信先が未設定のため、結果は送信されていません（練習扱い）。</div>';
+    btns.innerHTML='<button class="btn ghost" style="width:100%" onclick="location.reload()">Retry ／ もう一度（送信は最初の1回）</button>';
+  }else{
+    btns.innerHTML='<button class="btn" style="width:100%" onclick="location.reload()">Retry ／ もう一度</button>';
+  }
+}
+function rankMsg(acc){
+  if(acc===100)return "PERFECT ｜ 全問正解";
+  if(acc>=80)return "EXCELLENT";
+  if(acc>=60)return "GREAT";
+  if(acc>=40)return "GOOD";
+  return "KEEP GOING";
+}
+function animateNum(el,from,to,dur){
+  const t0=performance.now();
+  (function step(t){const p=Math.max(0,Math.min(1,(t-t0)/dur)),e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*e).toLocaleString();if(p<1)requestAnimationFrame(step);})(t0);
+}
+function burst(){
+  const cols=["#0c98c4","#7c5cff","#0fae77","#d99800","#e93c59"];
+  for(let i=0;i<70;i++){
+    const c=document.createElement("div");c.className="confetti";
+    c.style.left=Math.random()*100+"vw";c.style.background=cols[i%cols.length];
+    const dur=2.5+Math.random()*2,delay=Math.random()*.6;
+    c.animate([{transform:"translateY(0) rotate(0)",opacity:1},{transform:`translateY(102vh) rotate(${720*(Math.random()>.5?1:-1)}deg)`,opacity:1}],
+      {duration:dur*1000,delay:delay*1000,easing:"cubic-bezier(.3,.4,.6,1)"});
+    setTimeout(()=>c.remove(),(dur+delay)*1000);document.body.appendChild(c);
+  }
+}
+
+/* ---- submit ---- */
+function submit(correct,acc,note){
+  const payload={
+    title:PARAM_TITLE,sheet:PARAM_SHEET,quizId:SET.id,setLabel:SET.label,name:runMeta.name,studentId:runMeta.studentId,
+    count:total,correct:correct,score:score,accuracyPct:acc,timeSec:Math.round(FINAL_MS/1000),
+    awayCount:away.count,awaySec:Math.round(away.sec/1000),
+    startedAt:new Date(START_TS).toLocaleString("ja-JP"),submittedAt:new Date().toLocaleString("ja-JP"),
+    resubmit:sessionStorage.getItem("sq_sent_"+SET.id)?true:false,
+    details:Qs.map((q,i)=>({i:i+1,type:q.type,ok:isCorrect(i)})),
+    ua:navigator.userAgent
+  };
+  fetch(ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)})
+    .then(()=>{sessionStorage.setItem("sq_sent_"+SET.id,"1");note.innerHTML='<div class="sendnote ok">結果を送信しました。担当者のランキングに反映されます。</div>';})
+    .catch(()=>{note.innerHTML='<div class="sendnote ng">通信エラーで送信できませんでした。担当者にお伝えください。</div>';});
+}
+
+/* ---- away tracking ---- */
+document.addEventListener("visibilitychange",()=>{
+  if(!$("#s-quiz").classList.contains("on"))return;
+  if(document.hidden){away.count++;away.since=Date.now();}
+  else if(away.since){away.sec+=Date.now()-away.since;away.since=0;}
+});
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$("#"+id).classList.add("on");window.scrollTo(0,0);}
+
+/* ---- boot ---- */
+if(!window.QUIZ_SETS||!QUIZ_SETS.length){$("#startBox").innerHTML='<div class="card gate"><div class="sendnote ng">data/questions.js に問題がありません。</div></div>';}
+else buildStart();
+</script>
+</body>
+</html>

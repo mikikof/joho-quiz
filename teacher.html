@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配布・ランキング ― 情報スピードクイズ（担当者用）</title>
+<script>try{var t=localStorage.getItem("sq_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");}catch(e){}</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* LIGHT（デフォルト） */
+  --bg:#e8eaf0; --glow1:rgba(124,92,255,.16); --glow2:rgba(20,184,212,.14);
+  --surface:#ffffff; --tile-bg:rgba(17,21,31,.022);
+  --line:rgba(17,21,31,.09); --line-2:rgba(17,21,31,.14);
+  --ink:#10131c; --sub:#5d6678; --faint:#98a1b1;
+  --acc:#0c98c4; --acc-soft:rgba(12,152,196,.10); --acc-border:rgba(12,152,196,.5);
+  --btn-bg:#13151d; --btn-on:#fff; --btn-shadow:0 12px 26px -8px rgba(19,21,29,.5);
+  --mint:#0fae77; --rose:#ef3e5c; --gold:#d99800;
+  --card-shadow:0 24px 60px rgba(24,34,64,.13), 0 2px 6px rgba(24,34,64,.06);
+  --input-bg:rgba(17,21,31,.02);
+  --mono:"Space Grotesk","Montserrat",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#0a0b11; --glow1:rgba(124,92,255,.2); --glow2:rgba(34,211,238,.14);
+  --surface:#13151d; --tile-bg:rgba(255,255,255,.03);
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.16);
+  --ink:#eceff5; --sub:#8b93a6; --faint:#5b6376;
+  --acc:#22d3ee; --acc-soft:rgba(34,211,238,.12); --acc-border:rgba(34,211,238,.55);
+  --btn-bg:#eef1f7; --btn-on:#0a0b11; --btn-shadow:0 12px 26px -10px rgba(0,0,0,.7);
+  --mint:#34e3b0; --rose:#fb6f92; --gold:#f6c453;
+  --card-shadow:0 24px 70px rgba(0,0,0,.5);
+  --input-bg:rgba(255,255,255,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);line-height:1.7;min-height:100vh;
+  background:var(--bg);
+  background-image:radial-gradient(1100px 600px at 85% -12%,var(--glow1),transparent 60%),
+    radial-gradient(900px 520px at -10% 112%,var(--glow2),transparent 55%);
+  background-attachment:fixed;padding-bottom:60px;transition:background-color .3s,color .3s}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.themebtn{position:fixed;top:16px;right:16px;z-index:60;width:42px;height:42px;border-radius:13px;
+  border:1px solid var(--line-2);background:var(--surface);color:var(--sub);cursor:pointer;display:grid;place-items:center;box-shadow:var(--card-shadow)}
+.themebtn:hover{color:var(--acc);border-color:var(--acc-border)}
+.themebtn svg{width:19px;height:19px}.themebtn .sun{display:none}.themebtn .moon{display:block}
+:root[data-theme="dark"] .themebtn .sun{display:block}:root[data-theme="dark"] .themebtn .moon{display:none}
+.bar{padding:24px 0;border-bottom:1px solid var(--line)}
+.wrap{max-width:840px;margin:0 auto;padding:0 20px}
+.bar .eyebrow{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--acc)}
+.bar h1{font-size:1.3rem;font-weight:900;margin-top:6px}.bar p{font-size:.82rem;color:var(--sub)}
+.tabs{display:flex;gap:9px;margin-top:22px}
+.tab{flex:1;text-align:center;font-family:var(--mono);font-weight:600;letter-spacing:.04em;padding:14px;border-radius:12px;cursor:pointer;
+  background:var(--tile-bg);border:1px solid var(--line);color:var(--sub);transition:.2s}
+.tab.on{background:var(--btn-bg);color:var(--btn-on);border-color:transparent;box-shadow:var(--btn-shadow)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--card-shadow);padding:24px;margin-top:20px}
+h2{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--sub);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+.full{grid-column:1/-1}
+label{display:block;font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:7px}
+input,select{width:100%;font:inherit;font-size:.96rem;padding:13px 14px;border:1px solid var(--line-2);border-radius:11px;background:var(--input-bg);color:var(--ink)}
+input::placeholder{color:var(--faint)}
+input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+select{appearance:none;-webkit-appearance:none}
+select option{background:var(--surface);color:var(--ink)}
+.hint{font-size:.76rem;color:var(--faint);margin-top:6px}
+.btn{font:inherit;font-family:var(--mono);font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:11px;padding:13px 24px;cursor:pointer;
+  background:var(--btn-bg);color:var(--btn-on);font-size:.9rem;box-shadow:var(--btn-shadow)}
+.btn:hover{filter:brightness(1.05)}
+.btn.soft{background:var(--tile-bg);color:var(--ink);box-shadow:none;border:1px solid var(--line-2)}
+.out{display:none;margin-top:22px}.out.show{display:block}
+.linkbox{display:flex;gap:10px;margin-top:6px}
+.linkbox input{font-family:var(--mono);font-size:.8rem;background:var(--acc-soft)}
+.copied{color:var(--mint);font-weight:700;font-size:.85rem;margin-top:8px;display:none}
+.qr{text-align:center;margin-top:20px}
+.qr img{width:200px;height:200px;border-radius:14px;padding:12px;background:#fff;box-shadow:var(--card-shadow)}
+.note{font-size:.82rem;color:var(--sub);background:var(--tile-bg);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-top:16px}
+.warn{color:var(--gold);border-color:var(--line-2)}
+a{color:var(--acc)}
+.rkctrl{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.rkctrl .f{flex:1;min-width:180px}
+.statline{font-family:var(--mono);font-size:.8rem;color:var(--sub);letter-spacing:.04em;margin:2px 0 18px}
+.podium{display:grid;grid-template-columns:1fr 1.16fr 1fr;gap:12px;align-items:end;margin:6px 0 24px}
+.pod{border-radius:16px 16px 0 0;text-align:center;padding:16px 8px 20px;color:#0a0b11;position:relative}
+.pod .rkn{position:absolute;top:9px;left:0;right:0;font-family:var(--mono);font-weight:700;font-size:.74rem;opacity:.7}
+.pod .medal{font-size:1.7rem;line-height:1}
+.pod .nm{font-weight:900;font-size:1.02rem;margin-top:3px;line-height:1.3}
+.pod .sc{font-family:var(--mono);font-weight:700;font-size:1.55rem}
+.pod .meta{font-size:.72rem;opacity:.82}
+.pod.p1{background:linear-gradient(180deg,#ffe79c,#f6c453);height:178px;box-shadow:0 14px 40px rgba(214,160,30,.4)}
+.pod.p2{background:linear-gradient(180deg,#eef2f8,#b6c1d6);height:144px}
+.pod.p3{background:linear-gradient(180deg,#f0cba2,#cf915b);height:122px}
+table{width:100%;border-collapse:collapse;margin-top:4px}
+th,td{padding:12px 10px;text-align:left;font-size:.9rem;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:.66rem;color:var(--sub);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+td.r{font-family:var(--mono);font-weight:700;width:44px;color:var(--acc)}
+td.s{font-family:var(--mono);font-weight:700;text-align:right;color:var(--ink)}
+tr.rowhi td{background:var(--acc-soft)}
+tr.reveal{animation:slidein .4s both}
+@keyframes slidein{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.empty{text-align:center;color:var(--sub);padding:42px 0;font-weight:600}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid var(--acc-soft);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<button class="themebtn" id="themeBtn" aria-label="テーマ切り替え" title="テーマ切り替え">
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+</button>
+<div class="bar"><div class="wrap">
+  <div class="eyebrow">Information · Speed Quiz</div>
+  <h1>担当者コンソール</h1>
+  <p>配布リンクの作成と、結果ランキングの表示</p>
+</div></div>
+
+<div class="wrap">
+  <div class="tabs">
+    <div class="tab on" data-t="dist">01 · 配布する</div>
+    <div class="tab" data-t="rank">02 · ランキング</div>
+  </div>
+
+  <!-- ===== 配布 ===== -->
+  <div class="pane on" id="p-dist">
+    <div class="card">
+      <h2>Distribution ／ 配布設定</h2>
+      <div class="grid">
+        <div class="full">
+          <label>公開URL（index.html の場所）</label>
+          <input id="base" placeholder="https://ユーザー名.github.io/リポジトリ名/">
+          <div class="hint">GitHub Pages で公開した index.html の URL。末尾の index.html は省略可。</div>
+        </div>
+        <div class="full">
+          <label>課題名（この名前の集計タブに結果が溜まります）</label>
+          <input id="title" placeholder="例: 6/15 第1回 標本化クイズ">
+          <div class="hint">クイズごとに違う課題名にすると、スプレッドシート内で<b>タブが自動で分かれます</b>。同じ課題名は同じタブに集約。</div>
+        </div>
+        <div><label>範囲</label><select id="set"></select></div>
+        <div><label>問題数</label><select id="count">
+          <option value="0">全問</option><option value="5">5問</option><option value="10">10問</option></select></div>
+        <div class="full"><label>出題順</label><select id="order">
+          <option value="seq">問題集の順（文字コードが1番目）</option><option value="random">ランダム</option></select></div>
+      </div>
+      <div style="margin-top:20px"><button class="btn" id="make">リンクと QR を作成</button></div>
+    </div>
+
+    <div class="card out" id="out">
+      <h2>Distribute ／ 配布用リンク</h2>
+      <div class="linkbox"><input id="link" readonly onclick="this.select()"><button class="btn soft" id="copy">コピー</button></div>
+      <div class="copied" id="copied">✓ コピーしました</div>
+      <div class="qr"><img id="qr" alt="QRコード"><div class="hint">教室では QR を提示すると、各自の端末で開けます</div></div>
+      <div class="note" id="epnote"></div>
+      <div class="note">この URL を配布してください。受験者は氏名・学籍番号を入力し受験 → 結果は自動送信されます。「02 · ランキング」で順位を表示できます。</div>
+    </div>
+  </div>
+
+  <!-- ===== ランキング ===== -->
+  <div class="pane" id="p-rank">
+    <div class="card">
+      <h2>Leaderboard ／ ランキング表示</h2>
+      <div class="rkctrl">
+        <div class="f"><label>クイズ（集計タブ）を選ぶ</label><select id="rkSheet"><option value="">― 読み込み中 ―</option></select></div>
+        <div><button class="btn soft" id="rkReload">一覧更新</button></div>
+        <div><button class="btn" id="rkGo">集計する</button></div>
+      </div>
+      <div class="hint" style="margin-top:10px">クイズ（課題名）ごとにタブが自動で分かれます。同一受験者の複数回受験は「最高スコア（同点はタイムが短い方）」を採用します。</div>
+    </div>
+
+    <div class="card" id="rkResult" style="display:none">
+      <div id="rkStat" class="statline"></div>
+      <div class="podium" id="podium"></div>
+      <table id="rkTable"><thead><tr>
+        <th>順位</th><th>氏名</th><th>学籍番号</th><th style="text-align:right">スコア</th><th>正解</th><th>タイム</th></tr></thead>
+        <tbody id="rkBody"></tbody></table>
+    </div>
+    <div class="card" id="rkEmpty" style="display:none"><div class="empty" id="rkEmptyMsg"></div></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="data/questions.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const ENDPOINT=(window.APP_CONFIG&&APP_CONFIG.endpoint)||"";
+const ROOT=document.documentElement;
+function setTheme(t){if(t==="dark")ROOT.setAttribute("data-theme","dark");else ROOT.removeAttribute("data-theme");try{localStorage.setItem("sq_theme",t);}catch(e){}}
+$("#themeBtn").onclick=()=>setTheme(ROOT.getAttribute("data-theme")==="dark"?"light":"dark");
+
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll(".pane").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on"); $("#p-"+t.dataset.t).classList.add("on");
+  if(t.dataset.t==="rank"&&!sheetsLoaded) loadSheets();
+});
+
+/* ---- 配布 ---- */
+(QUIZ_SETS||[]).forEach((w,i)=>{const o=document.createElement("option");o.value=i;o.textContent=w.label;$("#set").appendChild(o);});
+$("#make").onclick=()=>{
+  let base=($("#base").value||"").trim();
+  if(!base){alert("公開URLを入力してください");return;}
+  base=base.replace(/index\.html.*$/,"").replace(/\/+$/,"");
+  const p=new URLSearchParams();
+  p.set("a","1");
+  p.set("t",($("#title").value||"情報スピードクイズ").trim());
+  p.set("s",$("#set").value);
+  p.set("n",$("#count").value);
+  p.set("o",$("#order").value);
+  const full=base+"/index.html?"+p.toString();
+  $("#link").value=full;
+  $("#qr").src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data="+encodeURIComponent(full);
+  const note=$("#epnote");
+  if(ENDPOINT){note.className="note";note.innerHTML="送信先（endpoint）設定済み ✓";}
+  else{note.className="note warn";note.innerHTML="config.js の endpoint が未設定です。このままだと結果が送信されず、ランキングも表示されません。apps-script/SETUP.md で設定してください。";}
+  $("#out").classList.add("show");$("#out").scrollIntoView({behavior:"smooth"});
+};
+$("#copy").onclick=()=>{const i=$("#link");i.select();navigator.clipboard&&navigator.clipboard.writeText(i.value);$("#copied").style.display="block";setTimeout(()=>$("#copied").style.display="none",2000);};
+
+/* ---- ランキング(JSONP) ---- */
+function esc(s){return (s+"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function fmtT(sec){return sec>=60?Math.floor(sec/60)+"分"+Math.round(sec%60)+"秒":sec+"秒";}
+let jsonpSeq=0, sheetsLoaded=false;
+function jsonp(extra){
+  return new Promise((resolve,reject)=>{
+    if(!ENDPOINT){reject("no-endpoint");return;}
+    const cb="sqcb"+(++jsonpSeq);
+    const sc=document.createElement("script");
+    const to=setTimeout(()=>{cleanup();reject("timeout");},12000);
+    function cleanup(){clearTimeout(to);delete window[cb];sc.remove();}
+    window[cb]=data=>{cleanup();resolve(data);};
+    sc.src=ENDPOINT+(ENDPOINT.includes("?")?"&":"?")+extra+"&callback="+cb;
+    sc.onerror=()=>{cleanup();reject("network");};
+    document.body.appendChild(sc);
+  });
+}
+async function loadSheets(){
+  const sel=$("#rkSheet");
+  sel.innerHTML='<option value="">― 読み込み中 ―</option>';
+  try{
+    const d=await jsonp("sheets=1");
+    sheetsLoaded=true;
+    const names=(d.sheets||[]);
+    if(!names.length){ sel.innerHTML='<option value="">（まだクイズの集計タブがありません）</option>'; return; }
+    sel.innerHTML=names.map(n=>`<option value="${encodeURIComponent(n)}">${esc(n)}</option>`).join("");
+  }catch(e){
+    sel.innerHTML=`<option value="">${e==="no-endpoint"?"endpoint 未設定":"取得失敗："+e}</option>`;
+  }
+}
+$("#rkReload").onclick=()=>loadSheets();
+$("#rkGo").onclick=async()=>{
+  const sheet=$("#rkSheet").value;
+  if(!sheet){ $("#rkEmpty").style.display="block"; $("#rkResult").style.display="none";
+    $("#rkEmptyMsg").textContent=ENDPOINT?"集計するクイズ（タブ）を選んでください。":"config.js の endpoint が未設定です。apps-script/SETUP.md を参照。"; return; }
+  const btn=$("#rkGo"); btn.innerHTML='<span class="spin"></span>';
+  $("#rkResult").style.display="none"; $("#rkEmpty").style.display="none";
+  try{
+    const data=await jsonp("ranking=1&sheet="+sheet);
+    btn.textContent="集計する";
+    if(!data||!data.rows||!data.rows.length){
+      $("#rkEmpty").style.display="block";
+      $("#rkEmptyMsg").textContent="このクイズはまだ提出がありません。受験が始まると順位が表示されます。";
+      return;
+    }
+    render(data);
+  }catch(e){
+    btn.textContent="集計する";
+    $("#rkEmpty").style.display="block";
+    $("#rkEmptyMsg").textContent = e==="no-endpoint"
+      ? "config.js の endpoint が未設定です。apps-script/SETUP.md の手順で設定してください。"
+      : "集計を取得できませんでした（"+e+"）。デプロイ設定とネット接続を確認してください。";
+  }
+};
+function render(data){
+  $("#rkResult").style.display="block";
+  $("#rkStat").textContent=`参加 ${data.count} 名${data.sheet?"　／　クイズ："+data.sheet:""}`;
+  const rows=data.rows, top=rows.slice(0,3);
+  const order=[1,0,2];
+  const medals=["🥇","🥈","🥉"];
+  $("#podium").innerHTML=order.map(o=>{
+    const r=top[o]; if(!r)return '<div></div>';
+    return `<div class="pod p${o+1}">
+      <div class="rkn">${o+1}位</div>
+      <div class="medal">${medals[o]}</div>
+      <div class="nm">${esc(r.name)}</div>
+      <div class="sc">${r.score.toLocaleString()}</div>
+      <div class="meta">正解${r.correct}/${r.count}・${fmtT(r.timeSec)}</div>
+    </div>`;
+  }).join("");
+  $("#rkBody").innerHTML="";
+  rows.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.className="reveal"+(i<3?" rowhi":"");
+    tr.style.animationDelay=(i*0.04)+"s";
+    tr.innerHTML=`<td class="r">${r.rank}</td><td>${esc(r.name)}</td><td>${esc(r.studentId||"")}</td>
+      <td class="s">${r.score.toLocaleString()}</td><td>${r.correct}/${r.count}（${r.accuracy}%）</td><td>${fmtT(r.timeSec)}</td>`;
+    $("#rkBody").appendChild(tr);
+  });
+  $("#rkResult").scrollIntoView({behavior:"smooth"});
+}
+</script>
+</body>
+</html>
