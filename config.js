@@ -9,7 +9,7 @@
 window.APP_CONFIG = {
   endpoints: {
     "TR": "https://script.google.com/macros/s/AKfycbwbeK4hHxq99gDY6SaUih4uSHbmwHxn76rVNWyAzBp7c4c35oV12vljHo3JDVtY8TTVyg/exec",
-    "TB": ""   // TB用のウェブアプリURLができたらここに貼る
+    "TB": "https://script.google.com/macros/s/AKfycbw82R8cVCXfHN2XaG9i2-p4JhcXzKZx9_rr0008DJHOj7-hdnrPgSxa9bLuDi8DZLYe/exec"
   },
   // 単一運用時／グループ未指定時のフォールバック（任意）
   endpoint: ""
